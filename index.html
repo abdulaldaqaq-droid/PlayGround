@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#07131c" />
+    <meta name="description" content="Take the controls and fly wherever the horizon leads." />
+    <title>SKYBOUND — The world is yours</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="./style.css" />
+    <script type="importmap">
+      { "imports": { "three": "./vendor/three.module.js" } }
+    </script>
+  </head>
+  <body>
+    <main id="game" aria-label="Skybound jet flying game">
+      <div id="viewport"></div>
+      <div class="vignette"></div>
+      <header class="topbar">
+        <a class="brand" href="#" aria-label="Skybound home"><span class="brand-mark">✳</span> SKYBOUND</a>
+        <div class="world-tag"><span class="live-dot"></span> OPEN SKIES <span class="tag-divider">/</span> NO ENEMIES. JUST YOU.</div>
+        <button id="sound-button" class="icon-button" aria-label="Toggle sound" title="Sound off">♫<span class="sound-slash"></span></button>
+      </header>
+
+      <section id="welcome" class="welcome-panel">
+        <div class="eyebrow"><span class="eyebrow-line"></span> YOUR WORLD. YOUR PACE.</div>
+        <h1>THE SKY<br /><em>IS YOURS.</em></h1>
+        <p>Leave the runway behind. Chase the light, find the islands, and fly as far as you want.</p>
+        <button id="start-button" class="primary-button"><span>TAKE THE CONTROLS</span><span class="button-arrow">↗</span></button>
+        <div class="welcome-note"><span>01</span> A quiet flight above a world without limits.</div>
+      </section>
+
+      <section id="loading" class="loading-panel hidden">
+        <div class="loading-spinner"></div><span>BUILDING YOUR WORLD</span>
+      </section>
+
+      <div id="hud" class="hud hidden" aria-live="polite">
+        <div class="hud-left">
+          <div class="readout-card"><span class="readout-label">ALTITUDE <small>MSL</small></span><strong id="altitude">0000</strong><span class="unit">FT</span><div class="readout-rule"><i id="altitude-fill"></i></div></div>
+          <div class="readout-card"><span class="readout-label">AIRSPEED <small>IAS</small></span><strong id="speed">000</strong><span class="unit">KTS</span><div class="readout-rule"><i id="speed-fill"></i></div></div>
+        </div>
+        <div class="hud-center">
+          <div class="heading-readout"><span>HDG</span><strong id="heading">000°</strong><span class="compass-tick">N</span></div>
+          <div class="flight-director"><div class="fd-ring"></div><div class="fd-cross"><i></i><b></b></div><div class="fd-dot"></div></div>
+          <div id="flight-status" class="flight-status">CRUISE</div>
+        </div>
+        <div class="hud-right">
+          <div class="route-card"><div class="route-top"><span class="route-kicker">SCENIC ROUTE</span><span id="gate-count">01 / 11</span></div><strong id="route-name">THE FIRST LIGHT</strong><div class="route-bottom"><span>NEXT WAYPOINT</span><span id="route-distance">— KM</span></div><div class="route-progress"><i id="route-fill"></i></div></div>
+          <div class="mini-map-wrap"><canvas id="minimap" width="180" height="180"></canvas><span class="map-label">WORLD MAP</span></div>
+        </div>
+        <div class="hud-bottom-left"><span class="keycap">W</span><span class="keycap">A</span><span class="keycap">S</span><span class="keycap">D</span><span class="help-copy">FLIGHT</span><span class="keycap wide">SHIFT</span><span class="help-copy">BOOST</span></div>
+        <div class="hud-bottom-right"><span id="distance">0.0 KM FLOWN</span><button id="pause-button" class="pause-button"><span>Ⅱ</span> PAUSE <kbd>ESC</kbd></button></div>
+        <div id="toast" class="toast"></div>
+      </div>
+
+      <section id="pause-panel" class="modal-panel hidden">
+        <div class="eyebrow"><span class="eyebrow-line"></span> TAKE A BREATHER</div><h2>FLIGHT<br /><em>PAUSED.</em></h2>
+        <p>The world can wait.</p><button id="resume-button" class="primary-button"><span>BACK TO THE SKY</span><span class="button-arrow">↗</span></button>
+        <button id="restart-button" class="text-button">RESTART FLIGHT <span>↻</span></button>
+      </section>
+
+      <section id="crash-panel" class="modal-panel hidden">
+        <div class="eyebrow"><span class="eyebrow-line"></span> A LITTLE BUMP IN THE JOURNEY</div><h2>FLIGHT<br /><em>ENDED.</em></h2>
+        <p id="crash-copy">Every landing is a chance to take off again.</p><button id="restart-crash" class="primary-button"><span>FLY AGAIN</span><span class="button-arrow">↗</span></button>
+      </section>
+
+      <section id="help-panel" class="help-panel hidden">
+        <button id="close-help" class="close-button" aria-label="Close controls">×</button>
+        <div class="eyebrow"><span class="eyebrow-line"></span> YOUR FLIGHT DECK</div><h2>THE<br /><em>CONTROLS.</em></h2>
+        <div class="control-list"><div><span><kbd>W</kbd><kbd>↑</kbd></span><b>NOSE UP</b></div><div><span><kbd>S</kbd><kbd>↓</kbd></span><b>NOSE DOWN</b></div><div><span><kbd>A</kbd><kbd>←</kbd></span><b>ROLL LEFT</b></div><div><span><kbd>D</kbd><kbd>→</kbd></span><b>ROLL RIGHT</b></div><div><span><kbd>Q</kbd><kbd>E</kbd></span><b>YAW LEFT / RIGHT</b></div><div><span><kbd>SHIFT</kbd></span><b>AFTERBURNER</b></div><div><span><kbd>R</kbd></span><b>RESET FLIGHT</b></div><div><span><kbd>V</kbd></span><b>CHANGE CAMERA</b></div><div><span><kbd>ESC</kbd></span><b>PAUSE</b></div></div>
+        <div class="touch-hint">ON TOUCHSCREENS<br /><strong>DRAG TO STEER · HOLD BOOST TO FLY FASTER</strong></div>
+      </section>
+
+      <div id="touch-controls" class="touch-controls hidden"><div id="touch-stick" class="touch-stick"><span class="stick-ring"></span><span id="stick-knob" class="stick-knob"></span></div><button id="touch-boost" class="touch-boost">BOOST</button></div>
+      <button id="help-button" class="help-button hidden" title="Flight controls">?</button>
+      <div class="screen-grain"></div>
+    </main>
+    <script type="module" src="./src/main.js"></script>
+  </body>
+</html>
