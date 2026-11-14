@@ -456,6 +456,7 @@ export class Jet {
     this.crashTimer = 0;
     this.stall = 0;
     this.gLoad = 1;
+    this.distanceFlown = 0;
     this.shake = 0;
     this.model.visible = true;
     this.trailR.reset();
